@@ -1,3 +1,5 @@
+// lib/config/app_config.dart
+
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:device_info_plus/device_info_plus.dart';
@@ -6,7 +8,11 @@ import 'package:flutter/foundation.dart';
 class AppConfig {
   static const String environment = 'PROD';
 
-  static const String apiBaseUrl = 'http://localhost:5000/api';
+  // Valor padrão — usado quando nenhum foi salvo ainda
+  static const String defaultApiBaseUrl = 'http://localhost:5000/api';
+
+  // Valor ativo em memória (pode ser sobrescrito pelo salvo no dispositivo)
+  static String apiBaseUrl = defaultApiBaseUrl;
 
   static String androidId = '';
   static String token = '';
@@ -25,11 +31,11 @@ MIT License
 
 Copyright (c) 2026 André Luferat / ONCredit
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ____ Tradução PT-BR não oficial ____
 
@@ -53,11 +59,12 @@ O SOFTWARE É FORNECIDO "NO ESTADO EM QUE SE ENCONTRA", SEM GARANTIA DE QUALQUER
     }
   }
 
-  // Carrega token e androidId salvos
+  // Carrega configurações salvas no dispositivo
   static Future<void> load() async {
     final prefs = await SharedPreferences.getInstance();
     token = prefs.getString('token') ?? '';
-    androidId = prefs.getString('androidId') ?? ''; // ← novo
+    androidId = prefs.getString('androidId') ?? '';
+    apiBaseUrl = prefs.getString('apiBaseUrl') ?? defaultApiBaseUrl; // ← novo
   }
 
   // Verifica se já temos um token salvo
@@ -66,14 +73,15 @@ O SOFTWARE É FORNECIDO "NO ESTADO EM QUE SE ENCONTRA", SEM GARANTIA DE QUALQUER
     return (prefs.getString('token') ?? '').isNotEmpty;
   }
 
-  // Testa conectividade com a API
-  static Future<bool> ping() async {
+  // Testa conectividade — aceita URL customizada (usada antes de salvar)
+  static Future<bool> ping({String? customUrl}) async {
+    final url = customUrl ?? apiBaseUrl;
     try {
       final dio = Dio(BaseOptions(
         connectTimeout: const Duration(seconds: 5),
         receiveTimeout: const Duration(seconds: 5),
       ));
-      final response = await dio.get('$apiBaseUrl/auth/ping');
+      final response = await dio.get('$url/auth/ping');
       return response.statusCode == 200;
     } catch (_) {
       return false;
@@ -81,7 +89,9 @@ O SOFTWARE É FORNECIDO "NO ESTADO EM QUE SE ENCONTRA", SEM GARANTIA DE QUALQUER
   }
 
   // Registra/autentica o dispositivo na API
-  static Future<String?> register(String androidId) async {
+  // Aceita URL customizada para o primeiro registro
+  static Future<String?> register(String androidId, {String? customUrl}) async {
+    final url = customUrl ?? apiBaseUrl;
     try {
       final dio = Dio(BaseOptions(
         connectTimeout: const Duration(seconds: 8),
@@ -89,7 +99,7 @@ O SOFTWARE É FORNECIDO "NO ESTADO EM QUE SE ENCONTRA", SEM GARANTIA DE QUALQUER
       ));
 
       final response = await dio.post(
-        '$apiBaseUrl/auth/register',
+        '$url/auth/register',
         data: {'android_id': androidId},
       );
 
@@ -97,9 +107,11 @@ O SOFTWARE É FORNECIDO "NO ESTADO EM QUE SE ENCONTRA", SEM GARANTIA DE QUALQUER
         final receivedToken = response.data['token'] as String;
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('token', receivedToken);
-        await prefs.setString('androidId', androidId); // ← novo
+        await prefs.setString('androidId', androidId);
+        await prefs.setString('apiBaseUrl', url); // ← novo
         token = receivedToken;
         AppConfig.androidId = androidId;
+        apiBaseUrl = url; // ← atualiza em memória
         return null;
       }
 
@@ -115,12 +127,14 @@ O SOFTWARE É FORNECIDO "NO ESTADO EM QUE SE ENCONTRA", SEM GARANTIA DE QUALQUER
     }
   }
 
-  // Limpa token e androidId (usado no reset de configurações)
+  // Limpa todas as configurações salvas
   static Future<void> clearToken() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('token');
     await prefs.remove('androidId');
+    await prefs.remove('apiBaseUrl');
     token = '';
     androidId = '';
+    apiBaseUrl = defaultApiBaseUrl;
   }
 }

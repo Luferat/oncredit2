@@ -47,69 +47,81 @@ class _SettingsPageState extends State<SettingsPage> {
     });
   }
 
- 
- 
+  Future<void> _editCriticalSettings() async {
+    final uidController = TextEditingController(text: AppConfig.androidId);
+    final urlController = TextEditingController(text: AppConfig.apiBaseUrl);
 
-
- Future<void> _editCriticalSettings() async {
-  final uidController = TextEditingController(text: AppConfig.androidId);
-  final originalUid = AppConfig.androidId;
-
-  final result = await showDialog<bool>(
-    context: context,
-    barrierDismissible: false,
-    builder: (_) => AlertDialog(
-      title: const Text('⚠ Configurações Críticas',
-          style: TextStyle(color: Colors.red)),
-      content: SingleChildScrollView(
-        child: Column(
-          children: [
-            const Text(
-              'Alterar o UID pode impedir o funcionamento do app.\n\n'
-              'Use apenas se souber o que está fazendo.',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 20),
-            TextField(
-              controller: uidController,
-              decoration: const InputDecoration(
-                labelText: 'UID do dispositivo',
-                border: OutlineInputBorder(),
+    final result = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => AlertDialog(
+        title: const Text(
+          '⚠ Configurações Críticas',
+          style: TextStyle(color: Colors.red),
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            children: [
+              const Text(
+                'Alterar essas configurações pode impedir o funcionamento do app.\n\n'
+                    'Use apenas se souber o que está fazendo.',
+                style: TextStyle(fontWeight: FontWeight.bold),
               ),
-            ),
-          ],
+              const SizedBox(height: 20),
+              TextField(
+                controller: uidController,
+                decoration: const InputDecoration(
+                  labelText: 'UID do dispositivo',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: urlController,
+                decoration: const InputDecoration(
+                  labelText: 'URL da API',
+                  border: OutlineInputBorder(),
+                ),
+                keyboardType: TextInputType.url,
+              ),
+            ],
+          ),
         ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Continuar'),
+          ),
+        ],
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context, false),
-          child: const Text('Cancelar'),
-        ),
-        ElevatedButton(
-          onPressed: () => Navigator.pop(context, true),
-          child: const Text('Continuar'),
-        ),
-      ],
-    ),
-  );
+    );
 
-  if (result != true) return;
+    if (result != true) return;
 
-  final newUid = uidController.text.trim();
-  if (newUid == originalUid) return;
+    final newUid = uidController.text.trim();
+    final newUrl = urlController.text.trim().replaceAll(RegExp(r'/+$'), '');
 
-  final confirmed = await _confirmCriticalChange();
-  if (!confirmed) return;
+    final unchanged =
+        newUid == AppConfig.androidId && newUrl == AppConfig.apiBaseUrl;
+    if (unchanged) return;
 
-  // Re-registra com o novo UID
-  final error = await AppConfig.register(newUid);
+    final confirmed = await _confirmCriticalChange();
+    if (!confirmed) return;
 
-  if (!mounted) return;
+    final error = await AppConfig.register(newUid, customUrl: newUrl);
 
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(content: Text(error ?? 'UID atualizado com sucesso')),
-  );
-}
+    if (!mounted) return;
+
+    setState(() {}); // atualiza a exibição na seção Administração
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(error ?? 'Configurações atualizadas com sucesso')),
+    );
+  }
 
   Future<bool> _confirmCriticalChange() async {
     final controller = TextEditingController();
@@ -321,13 +333,21 @@ class _SettingsPageState extends State<SettingsPage> {
                   ListTile(
                     leading: const Icon(Icons.person),
                     title: const Text('UID Atual'),
-                    subtitle: Text(AppConfig.androidId),
+                    subtitle: Text(
+                      AppConfig.androidId.isEmpty ? '—' : AppConfig.androidId,
+                    ),
                   ),
 
+                  const Divider(height: 1),
+
+                  ListTile(
+                    leading: const Icon(Icons.link),
+                    title: const Text('URL da API'),
+                    subtitle: Text(AppConfig.apiBaseUrl),
+                  ),
 
                   if (AppConfig.showResetLink) ...[
                     const Divider(height: 1),
-
                     ListTile(
                       leading: const Icon(Icons.cleaning_services),
                       title: const Text('Resetar Configurações Locais'),
