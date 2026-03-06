@@ -93,14 +93,19 @@ class _ClientListPageState extends State<ClientListPage> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.cloud_off,
-                              size: 64, color: Colors.grey.shade400),
+                          Icon(
+                            Icons.cloud_off,
+                            size: 64,
+                            color: Colors.grey.shade400,
+                          ),
                           const SizedBox(height: 16),
                           Text(
                             apiErrorMessage(snapshot.error!),
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                fontSize: 16, color: Colors.grey.shade600),
+                              fontSize: 16,
+                              color: Colors.grey.shade600,
+                            ),
                           ),
                           const SizedBox(height: 24),
                           ElevatedButton.icon(
@@ -163,42 +168,44 @@ class _ClientListPageState extends State<ClientListPage> {
                       child: clients.isEmpty
                           ? _buildEmptyState(context, allClients.isEmpty)
                           : ListView.builder(
-                        itemCount: clients.length,
-                        itemBuilder: (context, index) {
-                          final client = clients[index];
-                          return ListTile(
-                            leading: const CircleAvatar(
-                              child: Icon(Icons.person),
-                            ),
-                            contentPadding:
-                            const EdgeInsets.only(left: 40),
-                            title: Text(client.name),
-                            subtitle:
-                            Text('CPF: ${client.formattedCpf}'),
-                            onTap: () async {
-                              final messenger =
-                              ScaffoldMessenger.of(context);
-                              final result = await Navigator
-                                  .push<ClientEditResult>(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) =>
-                                      ClientPage(client: client),
-                                ),
-                              );
-                              if (result == ClientEditResult.deleted) {
-                                _reload();
-                                messenger.showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                        'Cliente apagado com sucesso'),
+                              itemCount: clients.length,
+                              itemBuilder: (context, index) {
+                                final client = clients[index];
+                                return ListTile(
+                                  leading: const CircleAvatar(
+                                    child: Icon(Icons.person),
                                   ),
+                                  contentPadding: const EdgeInsets.only(
+                                    left: 40,
+                                  ),
+                                  title: Text(client.name),
+                                  subtitle: Text('CPF: ${client.formattedCpf}'),
+                                  onTap: () async {
+                                    final messenger = ScaffoldMessenger.of(
+                                      context,
+                                    );
+                                    final result =
+                                        await Navigator.push<ClientEditResult>(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (_) =>
+                                                ClientPage(client: client),
+                                          ),
+                                        );
+                                    if (result == ClientEditResult.deleted) {
+                                      _reload();
+                                      messenger.showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                            'Cliente apagado com sucesso',
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                  },
                                 );
-                              }
-                            },
-                          );
-                        },
-                      ),
+                              },
+                            ),
                     ),
                   ],
                 );
@@ -252,8 +259,7 @@ class _ClientListPageState extends State<ClientListPage> {
               noClientsAtAll
                   ? 'Nenhum cliente cadastrado ainda'
                   : 'Nenhum cliente encontrado para "$_search"',
-              style:
-              TextStyle(fontSize: 16, color: Colors.grey.shade600),
+              style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
               textAlign: TextAlign.center,
             ),
             if (noClientsAtAll) ...[
@@ -266,7 +272,9 @@ class _ClientListPageState extends State<ClientListPage> {
                   backgroundColor: Colors.deepPurple,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 24, vertical: 14),
+                    horizontal: 24,
+                    vertical: 14,
+                  ),
                 ),
               ),
             ],
@@ -284,16 +292,15 @@ class _ClientListPageState extends State<ClientListPage> {
         decoration: InputDecoration(
           prefixIcon: const Icon(Icons.search),
           hintText: 'Pesquisar cliente...',
-          border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12)),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
           suffixIcon: _search.isNotEmpty
               ? IconButton(
-            icon: const Icon(Icons.clear),
-            onPressed: () {
-              _searchController.clear();
-              setState(() => _search = '');
-            },
-          )
+                  icon: const Icon(Icons.clear),
+                  onPressed: () {
+                    _searchController.clear();
+                    setState(() => _search = '');
+                  },
+                )
               : null,
         ),
         onChanged: (value) => setState(() => _search = value),

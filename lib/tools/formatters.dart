@@ -5,7 +5,9 @@ import 'package:intl/intl.dart';
 
 class Formatters {
   static final dateFormat = DateFormat('dd/MM/yyyy');
-  static final dateTimeFormat = DateFormat('dd/MM/yyyy HH:mm'); // ← novo, se precisar
+  static final dateTimeFormat = DateFormat(
+    'dd/MM/yyyy HH:mm',
+  );
 
   static final currencyFormat = NumberFormat.currency(
     locale: 'pt_BR',

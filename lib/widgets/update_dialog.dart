@@ -7,10 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 class UpdateDialog extends StatelessWidget {
   final UpdateInfo update;
 
-  const UpdateDialog({
-    super.key,
-    required this.update,
-  });
+  const UpdateDialog({super.key, required this.update});
 
   @override
   Widget build(BuildContext context) {
@@ -32,10 +29,7 @@ class UpdateDialog extends StatelessWidget {
           ElevatedButton(
             onPressed: () async {
               final uri = Uri.parse(update.apkUrl);
-              await launchUrl(
-                uri,
-                mode: LaunchMode.externalApplication,
-              );
+              await launchUrl(uri, mode: LaunchMode.externalApplication);
             },
             child: const Text('Atualizar'),
           ),

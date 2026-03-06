@@ -64,7 +64,7 @@ class _SettingsPageState extends State<SettingsPage> {
             children: [
               const Text(
                 'Alterar essas configurações pode impedir o funcionamento do app.\n\n'
-                    'Use apenas se souber o que está fazendo.',
+                'Use apenas se souber o que está fazendo.',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 20),

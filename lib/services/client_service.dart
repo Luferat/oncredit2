@@ -46,12 +46,19 @@ class ClientService {
 
   // POST /clients/<id>/purchases
   Future<int> createPurchase(int clientId, Map<String, dynamic> data) async {
-    final response = await _dio.post('/clients/$clientId/purchases', data: data);
+    final response = await _dio.post(
+      '/clients/$clientId/purchases',
+      data: data,
+    );
     return response.data['id'] as int;
   }
 
   // PUT /clients/<id>/purchases/<pur_id>
-  Future<void> updatePurchase(int clientId, int purchaseId, Map<String, dynamic> data) async {
+  Future<void> updatePurchase(
+    int clientId,
+    int purchaseId,
+    Map<String, dynamic> data,
+  ) async {
     await _dio.put('/clients/$clientId/purchases/$purchaseId', data: data);
   }
 
@@ -67,7 +74,11 @@ class ClientService {
   }
 
   // PUT /clients/<id>/payments/<pay_id>
-  Future<void> updatePayment(int clientId, int paymentId, Map<String, dynamic> data) async {
+  Future<void> updatePayment(
+    int clientId,
+    int paymentId,
+    Map<String, dynamic> data,
+  ) async {
     await _dio.put('/clients/$clientId/payments/$paymentId', data: data);
   }
 

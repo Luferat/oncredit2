@@ -7,6 +7,7 @@ import '../models/client.dart';
 import '../services/client_service.dart';
 import '../templates/appbar.dart';
 import '../theme/theme_extensions.dart';
+import '../tools/api_error.dart';
 import '../tools/formatters.dart';
 import 'client_edit_page.dart';
 import 'client_history_page.dart';
@@ -50,6 +51,40 @@ class _ClientPageState extends State<ClientPage> {
             return const Center(child: CircularProgressIndicator());
           }
 
+          if (snapshot.hasError) {
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(32),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.cloud_off,
+                      size: 64,
+                      color: Colors.grey.shade400,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      apiErrorMessage(snapshot.error!),
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.grey.shade600),
+                    ),
+                    const SizedBox(height: 24),
+                    ElevatedButton.icon(
+                      icon: const Icon(Icons.refresh),
+                      label: const Text('Tentar novamente'),
+                      onPressed: _reload,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.deepPurple,
+                        foregroundColor: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+
           final client = snapshot.data!;
 
           return Padding(
@@ -60,7 +95,9 @@ class _ClientPageState extends State<ClientPage> {
                 Text(
                   client.name,
                   style: const TextStyle(
-                      fontSize: 22, fontWeight: FontWeight.bold),
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 4),
                 Text('CPF: ${client.formattedCpf}'),
@@ -109,7 +146,9 @@ class _ClientPageState extends State<ClientPage> {
                         const Text(
                           'Resumo financeiro',
                           style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold),
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         const SizedBox(height: 8),
                         _line('Total em compras', client.totalPurchases ?? 0),
@@ -211,22 +250,32 @@ class _ClientPageState extends State<ClientPage> {
                 );
 
                 if (confirmed != true) return;
+                try {
+                  final result = await navigator.push<ClientEditResult>(
+                    MaterialPageRoute(
+                      builder: (_) => ClientEditPage(client: client),
+                    ),
+                  );
 
-                final result = await navigator.push<ClientEditResult>(
-                  MaterialPageRoute(
-                    builder: (_) => ClientEditPage(client: client),
-                  ),
-                );
+                  if (!mounted || result == null) return;
 
-                if (!mounted || result == null) return;
-
-                if (result == ClientEditResult.updated) {
-                  _reload();
-                  messenger.showSnackBar(const SnackBar(
-                    content: Text('Cliente atualizado com sucesso'),
-                  ));
-                } else if (result == ClientEditResult.deleted) {
-                  navigator.pop(ClientEditResult.deleted);
+                  if (result == ClientEditResult.updated) {
+                    _reload();
+                    messenger.showSnackBar(
+                      const SnackBar(
+                        content: Text('Cliente atualizado com sucesso'),
+                      ),
+                    );
+                  } else if (result == ClientEditResult.deleted) {
+                    navigator.pop(ClientEditResult.deleted);
+                  }
+                } catch (e) {
+                  messenger.showSnackBar(
+                    SnackBar(
+                      content: Text(apiErrorMessage(e)),
+                      backgroundColor: Colors.red.shade700,
+                    ),
+                  );
                 }
               },
             ),
@@ -270,21 +319,27 @@ class _ClientPageState extends State<ClientPage> {
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 12),
-                ...client.phones.map((phone) => ListTile(
-                      leading: const Icon(Icons.phone_android),
-                      title: Text(Formatters.formatPhone(phone)),
-                      subtitle: const Text('Toque no menu para ações'),
-                      trailing: PopupMenuButton<String>(
-                        onSelected: (v) => _handlePhoneAction(v, phone),
-                        itemBuilder: (_) => const [
-                          PopupMenuItem(
-                              value: 'copy', child: Text('Copiar número')),
-                          PopupMenuItem(value: 'call', child: Text('Ligar')),
-                          PopupMenuItem(
-                              value: 'whatsapp', child: Text('WhatsApp')),
-                        ],
-                      ),
-                    )),
+                ...client.phones.map(
+                  (phone) => ListTile(
+                    leading: const Icon(Icons.phone_android),
+                    title: Text(Formatters.formatPhone(phone)),
+                    subtitle: const Text('Toque no menu para ações'),
+                    trailing: PopupMenuButton<String>(
+                      onSelected: (v) => _handlePhoneAction(v, phone),
+                      itemBuilder: (_) => const [
+                        PopupMenuItem(
+                          value: 'copy',
+                          child: Text('Copiar número'),
+                        ),
+                        PopupMenuItem(value: 'call', child: Text('Ligar')),
+                        PopupMenuItem(
+                          value: 'whatsapp',
+                          child: Text('WhatsApp'),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
                 const SizedBox(height: 8),
                 SizedBox(
                   width: double.infinity,
@@ -307,18 +362,31 @@ class _ClientPageState extends State<ClientPage> {
       switch (action) {
         case 'copy':
           await Clipboard.setData(ClipboardData(text: number));
+          if (mounted) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(const SnackBar(content: Text('Número copiado!')));
+          }
           break;
         case 'call':
-          await launchUrl(Uri(scheme: 'tel', path: number),
-              mode: LaunchMode.externalApplication);
+          await launchUrl(
+            Uri(scheme: 'tel', path: number),
+            mode: LaunchMode.externalApplication,
+          );
           break;
         case 'whatsapp':
-          await launchUrl(Uri.parse('https://wa.me/55$number'),
-              mode: LaunchMode.externalApplication);
+          await launchUrl(
+            Uri.parse('https://wa.me/55$number'),
+            mode: LaunchMode.externalApplication,
+          );
           break;
       }
     } catch (e) {
-      debugPrint('Launch error: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Não foi possível executar a ação.')),
+        );
+      }
     }
   }
 
@@ -332,7 +400,8 @@ class _ClientPageState extends State<ClientPage> {
           Text(
             Formatters.currencyFormat.format(value),
             style: TextStyle(
-                fontWeight: bold ? FontWeight.bold : FontWeight.normal),
+              fontWeight: bold ? FontWeight.bold : FontWeight.normal,
+            ),
           ),
         ],
       ),

@@ -4,37 +4,39 @@ import 'package:dio/dio.dart';
 import '../config/app_config.dart';
 
 class ApiClient {
-  static final Dio _dio = Dio(
-    BaseOptions(
-      baseUrl: AppConfig.apiBaseUrl,
-      connectTimeout: const Duration(seconds: 10),
-      receiveTimeout: const Duration(seconds: 10),
-      headers: {'Content-Type': 'application/json'},
-    ),
-  )..interceptors.add(
-    InterceptorsWrapper(
-      onRequest: (options, handler) {
-        final token = AppConfig.token;
-        if (token.isNotEmpty) {
-          options.headers['X-API-Key'] = token;
-        }
-        handler.next(options);
-      },
+  static final Dio _dio =
+      Dio(
+          BaseOptions(
+            baseUrl: AppConfig.apiBaseUrl,
+            connectTimeout: const Duration(seconds: 10),
+            receiveTimeout: const Duration(seconds: 10),
+            headers: {'Content-Type': 'application/json'},
+          ),
+        )
+        ..interceptors.add(
+          InterceptorsWrapper(
+            onRequest: (options, handler) {
+              final token = AppConfig.token;
+              if (token.isNotEmpty) {
+                options.headers['X-API-Key'] = token;
+              }
+              handler.next(options);
+            },
 
-      onError: (DioException error, handler) {
-        final status = error.response?.statusCode;
-        final message = _friendlyMessage(status, error);
-        handler.reject(
-          DioException(
-            requestOptions: error.requestOptions,
-            error: ApiException(message: message, statusCode: status),
-            response: error.response,
-            type: error.type,
+            onError: (DioException error, handler) {
+              final status = error.response?.statusCode;
+              final message = _friendlyMessage(status, error);
+              handler.reject(
+                DioException(
+                  requestOptions: error.requestOptions,
+                  error: ApiException(message: message, statusCode: status),
+                  response: error.response,
+                  type: error.type,
+                ),
+              );
+            },
           ),
         );
-      },
-    ),
-  );
 
   static Dio get instance => _dio;
 

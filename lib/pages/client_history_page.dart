@@ -29,13 +29,14 @@ class _ClientHistoryPageState extends State<ClientHistoryPage> {
 
   void _reload() {
     setState(() {
-      _dataFuture = Future.wait([
-        ClientService().getClientHistory(widget.client.id),
-        ClientService().getClient(widget.client.id),
-      ]).then((results) => (
-      results[0] as List<FinancialEvent>,
-      results[1] as Client,
-      ));
+      _dataFuture =
+          Future.wait([
+            ClientService().getClientHistory(widget.client.id),
+            ClientService().getClient(widget.client.id),
+          ]).then(
+            (results) =>
+                (results[0] as List<FinancialEvent>, results[1] as Client),
+          );
     });
   }
 
@@ -44,10 +45,7 @@ class _ClientHistoryPageState extends State<ClientHistoryPage> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => EditEventSheet(
-        event: item,
-        clientId: widget.client.id,
-      ),
+      builder: (_) => EditEventSheet(event: item, clientId: widget.client.id),
     );
     if (changed == true) _reload();
   }
@@ -72,7 +70,9 @@ class _ClientHistoryPageState extends State<ClientHistoryPage> {
               Text(
                 widget.client.name,
                 style: const TextStyle(
-                    fontSize: 22, fontWeight: FontWeight.bold),
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 4),
               Text('CPF: ${widget.client.formattedCpf}'),
@@ -94,7 +94,8 @@ class _ClientHistoryPageState extends State<ClientHistoryPage> {
                         children: [
                           const Expanded(
                             child: Center(
-                                child: Text('Nenhum registro encontrado')),
+                              child: Text('Nenhum registro encontrado'),
+                            ),
                           ),
                           _summaryCard(context, client),
                         ],
@@ -117,8 +118,7 @@ class _ClientHistoryPageState extends State<ClientHistoryPage> {
                                   isPurchase
                                       ? Icons.shopping_cart
                                       : Icons.payments,
-                                  color:
-                                  isPurchase ? Colors.red : Colors.green,
+                                  color: isPurchase ? Colors.red : Colors.green,
                                 ),
                                 title: Text(item.description),
                                 subtitle: Text(
@@ -192,7 +192,8 @@ class _ClientHistoryPageState extends State<ClientHistoryPage> {
           Text(
             Formatters.currencyFormat.format(value),
             style: TextStyle(
-                fontWeight: bold ? FontWeight.bold : FontWeight.normal),
+              fontWeight: bold ? FontWeight.bold : FontWeight.normal,
+            ),
           ),
         ],
       ),

@@ -43,7 +43,9 @@ class _EditEventSheetState extends State<EditEventSheet> {
 
     if (_isPurchase) {
       // Desmonta "2 x Calça jeans" → quantity=2, description="Calça jeans"
-      final match = RegExp(r'^(\d+) x (.+)$').firstMatch(widget.event.description);
+      final match = RegExp(
+        r'^(\d+) x (.+)$',
+      ).firstMatch(widget.event.description);
       final quantity = match?.group(1) ?? '1';
       final description = match?.group(2) ?? widget.event.description;
       final unitValue = match != null
@@ -53,7 +55,8 @@ class _EditEventSheetState extends State<EditEventSheet> {
       _descriptionController = TextEditingController(text: description);
       _quantityController = TextEditingController(text: quantity);
       _unitValueController = TextEditingController(
-          text: Formatters.currencyFormat.format(unitValue));
+        text: Formatters.currencyFormat.format(unitValue),
+      );
       _valueController = TextEditingController();
       _method = 'Dinheiro';
     } else {
@@ -61,7 +64,8 @@ class _EditEventSheetState extends State<EditEventSheet> {
       _quantityController = TextEditingController();
       _unitValueController = TextEditingController();
       _valueController = TextEditingController(
-          text: Formatters.currencyFormat.format(widget.event.value));
+        text: Formatters.currencyFormat.format(widget.event.value),
+      );
       _method = widget.event.method ?? 'Dinheiro';
     }
   }
@@ -155,7 +159,9 @@ class _EditEventSheetState extends State<EditEventSheet> {
 
     return Padding(
       // Sobe o sheet quando o teclado aparece
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
       child: Container(
         decoration: BoxDecoration(
           color: Theme.of(context).scaffoldBackgroundColor,
@@ -185,9 +191,13 @@ class _EditEventSheetState extends State<EditEventSheet> {
                     color: color,
                   ),
                   const SizedBox(width: 8),
-                  Text(title,
-                      style: const TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.bold)),
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                   const Spacer(),
                   IconButton(
                     icon: const Icon(Icons.delete, color: Colors.red),
@@ -216,8 +226,7 @@ class _EditEventSheetState extends State<EditEventSheet> {
                 width: double.infinity,
                 child: ElevatedButton.icon(
                   icon: const Icon(Icons.save),
-                  label: const Text('Salvar',
-                      style: TextStyle(fontSize: 18)),
+                  label: const Text('Salvar', style: TextStyle(fontSize: 18)),
                   onPressed: _saving ? null : _save,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.deepPurple,
@@ -262,7 +271,7 @@ class _EditEventSheetState extends State<EditEventSheet> {
               inputFormatters: [Formatters.currencyInput],
               decoration: const InputDecoration(labelText: 'Valor unitário'),
               validator: (v) =>
-              v == null || v.isEmpty ? 'Informe o valor' : null,
+                  v == null || v.isEmpty ? 'Informe o valor' : null,
             ),
           ),
         ],
@@ -289,7 +298,10 @@ class _EditEventSheetState extends State<EditEventSheet> {
           DropdownMenuItem(value: 'PIX', child: Text('PIX')),
           DropdownMenuItem(value: 'Débito', child: Text('Débito')),
           DropdownMenuItem(value: 'Crédito', child: Text('Crédito')),
-          DropdownMenuItem(value: 'Transferência', child: Text('Transferência')),
+          DropdownMenuItem(
+            value: 'Transferência',
+            child: Text('Transferência'),
+          ),
         ],
         onChanged: (v) => setState(() => _method = v!),
       ),

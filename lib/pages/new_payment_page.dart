@@ -87,19 +87,33 @@ class _NewPaymentPageState extends State<NewPaymentPage> {
                     focusNode: _valueFocus,
                     keyboardType: TextInputType.number,
                     inputFormatters: [Formatters.currencyInput],
-                    decoration: const InputDecoration(labelText: 'Valor do pagamento'),
-                    validator: (v) => v == null || v.isEmpty ? 'Informe o valor' : null,
+                    decoration: const InputDecoration(
+                      labelText: 'Valor do pagamento',
+                    ),
+                    validator: (v) =>
+                        v == null || v.isEmpty ? 'Informe o valor' : null,
                   ),
                   const SizedBox(height: 16),
                   DropdownButtonFormField<String>(
                     initialValue: _method,
-                    decoration: const InputDecoration(labelText: 'Forma de pagamento'),
+                    decoration: const InputDecoration(
+                      labelText: 'Forma de pagamento',
+                    ),
                     items: const [
-                      DropdownMenuItem(value: 'Dinheiro', child: Text('Dinheiro')),
+                      DropdownMenuItem(
+                        value: 'Dinheiro',
+                        child: Text('Dinheiro'),
+                      ),
                       DropdownMenuItem(value: 'PIX', child: Text('PIX')),
                       DropdownMenuItem(value: 'Débito', child: Text('Débito')),
-                      DropdownMenuItem(value: 'Crédito', child: Text('Crédito')),
-                      DropdownMenuItem(value: 'Transferência', child: Text('Transferência')),
+                      DropdownMenuItem(
+                        value: 'Crédito',
+                        child: Text('Crédito'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'Transferência',
+                        child: Text('Transferência'),
+                      ),
                     ],
                     onChanged: (v) => setState(() => _method = v!),
                   ),
@@ -115,7 +129,10 @@ class _NewPaymentPageState extends State<NewPaymentPage> {
                     width: double.infinity,
                     child: ElevatedButton.icon(
                       icon: const Icon(Icons.save),
-                      label: const Text('Salvar pagamento', style: TextStyle(fontSize: 18)),
+                      label: const Text(
+                        'Salvar pagamento',
+                        style: TextStyle(fontSize: 18),
+                      ),
                       onPressed: _saving ? null : _save,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: context.colors.onPrimary,
