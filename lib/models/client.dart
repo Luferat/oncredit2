@@ -59,8 +59,8 @@ class Client {
       cpf: json['cpf'] as String,
       contacts: json['contacts'] != null
           ? (json['contacts'] as List)
-              .map((c) => ClientContact.fromJson(c))
-              .toList()
+                .map((c) => ClientContact.fromJson(c))
+                .toList()
           : [],
       totalPurchases: (json['total_purchases'] as num?)?.toDouble(),
       totalPayments: (json['total_payments'] as num?)?.toDouble(),

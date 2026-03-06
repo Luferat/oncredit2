@@ -9,7 +9,8 @@ class BiometricService {
   static final _auth = LocalAuthentication();
 
   // Só disponível no Android (não na Web)
-  static bool get isSupported => !kIsWeb && defaultTargetPlatform == TargetPlatform.android;
+  static bool get isSupported =>
+      !kIsWeb && defaultTargetPlatform == TargetPlatform.android;
 
   static Future<bool> isEnabled() async {
     if (!isSupported) return false;

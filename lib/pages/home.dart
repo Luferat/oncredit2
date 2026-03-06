@@ -75,7 +75,7 @@ class _HomePageState extends State<HomePage> {
                   children: [
                     const Text(
                       'Para começar, configure o acesso ao servidor.\n\n'
-                          'Em caso de dúvidas, contacte o administrador do sistema.',
+                      'Em caso de dúvidas, contacte o administrador do sistema.',
                     ),
                     const SizedBox(height: 16),
                     TextField(
@@ -109,9 +109,10 @@ class _HomePageState extends State<HomePage> {
                 ElevatedButton(
                   onPressed: () async {
                     final uid = uidController.text.trim();
-                    final url = urlController.text
-                        .trim()
-                        .replaceAll(RegExp(r'/+$'), '');
+                    final url = urlController.text.trim().replaceAll(
+                      RegExp(r'/+$'),
+                      '',
+                    );
 
                     // Validações básicas
                     if (uid.isEmpty) {
@@ -139,16 +140,15 @@ class _HomePageState extends State<HomePage> {
                     // Testa conectividade com a URL informada
                     final online = await AppConfig.ping(customUrl: url);
                     if (!online) {
-                      setDialogState(() =>
-                      urlError = 'Servidor indisponível. Verifique a URL.');
+                      setDialogState(
+                        () => urlError =
+                            'Servidor indisponível. Verifique a URL.',
+                      );
                       return;
                     }
 
                     // Registra passando a URL customizada
-                    final error = await AppConfig.register(
-                      uid,
-                      customUrl: url,
-                    );
+                    final error = await AppConfig.register(uid, customUrl: url);
 
                     if (error != null) {
                       setDialogState(() {
@@ -206,20 +206,20 @@ class _HomePageState extends State<HomePage> {
               duration: const Duration(milliseconds: 300),
               child: _showBiometric
                   ? const Icon(
-                Icons.fingerprint,
-                key: ValueKey('fingerprint'),
-                size: 72,
-                color: Colors.orange,
-              )
+                      Icons.fingerprint,
+                      key: ValueKey('fingerprint'),
+                      size: 72,
+                      color: Colors.orange,
+                    )
                   : const SizedBox(
-                key: ValueKey('spinner'),
-                width: 36,
-                height: 36,
-                child: CircularProgressIndicator(
-                  color: Colors.orange,
-                  strokeWidth: 3,
-                ),
-              ),
+                      key: ValueKey('spinner'),
+                      width: 36,
+                      height: 36,
+                      child: CircularProgressIndicator(
+                        color: Colors.orange,
+                        strokeWidth: 3,
+                      ),
+                    ),
             ),
             const SizedBox(height: 24),
             AnimatedSwitcher(
