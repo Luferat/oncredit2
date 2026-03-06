@@ -1,3 +1,5 @@
+// lib/pages/client_list.dart
+
 import 'package:flutter/material.dart';
 import '../models/client.dart';
 import '../models/client_list_response.dart';
@@ -6,6 +8,7 @@ import '../templates/appbar.dart';
 import '../config/app_config.dart';
 import '../theme/theme_extensions.dart';
 import '../tools/formatters.dart';
+import '../tools/api_error.dart';
 import 'client_edit_page.dart';
 import 'client_page.dart';
 import 'new_client_page.dart';
@@ -42,6 +45,14 @@ class _ClientListPageState extends State<ClientListPage> {
     });
   }
 
+  Future<void> _goToNewClient() async {
+    final created = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const NewClientPage()),
+    );
+    if (created == true) _reload();
+  }
+
   List<Client> _filterClients(List<Client> all) {
     final query = _search.trim().toLowerCase();
     if (query.isEmpty) return all;
@@ -59,7 +70,6 @@ class _ClientListPageState extends State<ClientListPage> {
       appBar: MyAppBar(),
       body: Column(
         children: [
-          // UID ativo
           Align(
             alignment: Alignment.centerRight,
             child: Padding(
@@ -71,27 +81,54 @@ class _ClientListPageState extends State<ClientListPage> {
             ),
           ),
 
-          // Card de saldo + lista: único FutureBuilder
           Expanded(
             child: FutureBuilder<ClientListResponse>(
               future: _listFuture,
               builder: (context, snapshot) {
+                // Erro de rede ou API
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(32),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.cloud_off,
+                              size: 64, color: Colors.grey.shade400),
+                          const SizedBox(height: 16),
+                          Text(
+                            apiErrorMessage(snapshot.error!),
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                fontSize: 16, color: Colors.grey.shade600),
+                          ),
+                          const SizedBox(height: 24),
+                          ElevatedButton.icon(
+                            icon: const Icon(Icons.refresh),
+                            label: const Text('Tentar novamente'),
+                            onPressed: _reload,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.deepPurple,
+                              foregroundColor: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }
+
                 if (!snapshot.hasData) {
                   return const Center(child: CircularProgressIndicator());
                 }
 
-                if (snapshot.hasError) {
-                  return Center(
-                    child: Text('Erro ao carregar: ${snapshot.error}'),
-                  );
-                }
-
                 final balance = snapshot.data!.balance;
-                final clients = _filterClients(snapshot.data!.clients);
+                final allClients = snapshot.data!.clients;
+                final clients = _filterClients(allClients);
 
                 return Column(
                   children: [
-                    // Saldo
+                    // Card de saldo
                     Card(
                       margin: const EdgeInsets.all(16),
                       color: context.colors.primaryContainer,
@@ -121,50 +158,47 @@ class _ClientListPageState extends State<ClientListPage> {
                     _buildSearchField(),
                     const SizedBox(height: 8),
 
-                    // Lista de clientes
+                    // Lista ou estado vazio
                     Expanded(
                       child: clients.isEmpty
-                          ? const Center(
-                              child: Text('Nenhum cliente encontrado'),
-                            )
+                          ? _buildEmptyState(context, allClients.isEmpty)
                           : ListView.builder(
-                              itemCount: clients.length,
-                              itemBuilder: (context, index) {
-                                final client = clients[index];
-                                return ListTile(
-                                  leading: const CircleAvatar(
-                                    child: Icon(Icons.person),
-                                  ),
-                                  contentPadding:
-                                      const EdgeInsets.only(left: 40),
-                                  title: Text(client.name),
-                                  subtitle:
-                                      Text('CPF: ${client.formattedCpf}'),
-                                  onTap: () async {
-                                    final messenger =
-                                        ScaffoldMessenger.of(context);
-                                    final result =
-                                        await Navigator.push<ClientEditResult>(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) =>
-                                            ClientPage(client: client),
-                                      ),
-                                    );
-                                    if (result == ClientEditResult.deleted) {
-                                      _reload();
-                                      messenger.showSnackBar(
-                                        const SnackBar(
-                                          content: Text(
-                                            'Cliente apagado com sucesso',
-                                          ),
-                                        ),
-                                      );
-                                    }
-                                  },
-                                );
-                              },
+                        itemCount: clients.length,
+                        itemBuilder: (context, index) {
+                          final client = clients[index];
+                          return ListTile(
+                            leading: const CircleAvatar(
+                              child: Icon(Icons.person),
                             ),
+                            contentPadding:
+                            const EdgeInsets.only(left: 40),
+                            title: Text(client.name),
+                            subtitle:
+                            Text('CPF: ${client.formattedCpf}'),
+                            onTap: () async {
+                              final messenger =
+                              ScaffoldMessenger.of(context);
+                              final result = await Navigator
+                                  .push<ClientEditResult>(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      ClientPage(client: client),
+                                ),
+                              );
+                              if (result == ClientEditResult.deleted) {
+                                _reload();
+                                messenger.showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                        'Cliente apagado com sucesso'),
+                                  ),
+                                );
+                              }
+                            },
+                          );
+                        },
+                      ),
                     ),
                   ],
                 );
@@ -185,15 +219,7 @@ class _ClientListPageState extends State<ClientListPage> {
                     'Novo cliente',
                     style: TextStyle(fontSize: 18),
                   ),
-                  onPressed: () async {
-                    final created = await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const NewClientPage(),
-                      ),
-                    );
-                    if (created == true) _reload();
-                  },
+                  onPressed: _goToNewClient,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: context.colors.onPrimary,
                     foregroundColor: context.colors.primary,
@@ -208,6 +234,48 @@ class _ClientListPageState extends State<ClientListPage> {
     );
   }
 
+  // Estado vazio — diferencia lista vazia de filtro sem resultado
+  Widget _buildEmptyState(BuildContext context, bool noClientsAtAll) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              noClientsAtAll ? Icons.people_outline : Icons.search_off,
+              size: 72,
+              color: Colors.grey.shade400,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              noClientsAtAll
+                  ? 'Nenhum cliente cadastrado ainda'
+                  : 'Nenhum cliente encontrado para "$_search"',
+              style:
+              TextStyle(fontSize: 16, color: Colors.grey.shade600),
+              textAlign: TextAlign.center,
+            ),
+            if (noClientsAtAll) ...[
+              const SizedBox(height: 24),
+              ElevatedButton.icon(
+                icon: const Icon(Icons.person_add),
+                label: const Text('Cadastrar primeiro cliente'),
+                onPressed: _goToNewClient,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.deepPurple,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 24, vertical: 14),
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildSearchField() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -216,16 +284,16 @@ class _ClientListPageState extends State<ClientListPage> {
         decoration: InputDecoration(
           prefixIcon: const Icon(Icons.search),
           hintText: 'Pesquisar cliente...',
-          border:
-              OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12)),
           suffixIcon: _search.isNotEmpty
               ? IconButton(
-                  icon: const Icon(Icons.clear),
-                  onPressed: () {
-                    _searchController.clear();
-                    setState(() => _search = '');
-                  },
-                )
+            icon: const Icon(Icons.clear),
+            onPressed: () {
+              _searchController.clear();
+              setState(() => _search = '');
+            },
+          )
               : null,
         ),
         onChanged: (value) => setState(() => _search = value),
