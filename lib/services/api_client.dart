@@ -38,7 +38,12 @@ class ApiClient {
           ),
         );
 
-  static Dio get instance => _dio;
+  // static Dio get instance => _dio;
+
+  static Dio get instance {
+    _dio.options.baseUrl = AppConfig.apiBaseUrl; // ← atualiza antes de cada uso
+    return _dio;
+  }
 
   static String _friendlyMessage(int? status, DioException error) {
     switch (status) {
