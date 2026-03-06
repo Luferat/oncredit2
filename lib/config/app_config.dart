@@ -12,7 +12,7 @@ class AppConfig {
   static String token = '';
 
   static bool showRepositoryLink = false;
-  static bool showResetLink = true;
+  static bool showResetLink = false;
 
   static Map<String, String> about = {
     'app': '© 2026 André Luferat / ONCredit',
