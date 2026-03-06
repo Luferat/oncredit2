@@ -1,0 +1,62 @@
+{
+  "users": {
+    "dev_uid_001": {
+      "clients": {
+        "c1": {
+          "name": "Maria Aparecida",
+          "cpf": "12345678900",
+          "phones": ["11999990001"],
+          "createdAt": "2026-01-10"
+        },
+        "c2": {
+          "name": "João Carlos",
+          "cpf": "98765432100",
+          "phones": ["11988880002", "11977770003"],
+          "createdAt": "2026-01-12"
+        }
+      },
+
+      "purchases": {
+        "p1": {
+          "clientId": "c1",
+          "description": "Blusa feminina",
+          "quantity": 1,
+          "unitValue": 89.90,
+          "totalValue": 89.90,
+          "date": "2026-01-15"
+        },
+        "p2": {
+          "clientId": "c1",
+          "description": "Calça jeans",
+          "quantity": 1,
+          "unitValue": 149.90,
+          "totalValue": 149.90,
+          "date": "2026-01-20"
+        },
+        "p3": {
+          "clientId": "c2",
+          "description": "Camisa social",
+          "quantity": 2,
+          "unitValue": 79.90,
+          "totalValue": 159.80,
+          "date": "2026-01-18"
+        }
+      },
+
+      "payments": {
+        "pay1": {
+          "clientId": "c1",
+          "value": 100.00,
+          "method": "PIX",
+          "date": "2026-01-22"
+        },
+        "pay2": {
+          "clientId": "c2",
+          "value": 50.00,
+          "method": "Dinheiro",
+          "date": "2026-01-25"
+        }
+      }
+    }
+  }
+}

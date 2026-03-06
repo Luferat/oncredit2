@@ -1,0 +1,29 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Flutter App",
+      "type": "dart",
+      "request": "launch",
+      "program": "lib/main.dart"
+    },
+    {
+      "name": "Flask Server",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "flask",
+      "env": {
+        "FLASK_APP": "app.py",
+        "FLASK_ENV": "development"
+      },
+      "args": ["run", "--port", "5000"],
+      "jinja": true
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Full Stack (Flutter + Flask)",
+      "configurations": ["Flutter App", "Flask Server"]
+    }
+  ]
+}
