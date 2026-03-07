@@ -21,14 +21,14 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   String _appVersion = '';
 
-  bool _biometricEnabled = false; // ← novo
-  bool _biometricAvailable = false; // ← novo
+  bool _biometricEnabled = false;
+  bool _biometricAvailable = false;
 
   @override
   void initState() {
     super.initState();
     _loadVersion();
-    _loadBiometric(); // ← novo
+    _loadBiometric();
   }
 
   Future<void> _loadBiometric() async {
@@ -43,7 +43,7 @@ class _SettingsPageState extends State<SettingsPage> {
   Future<void> _loadVersion() async {
     final info = await PackageInfo.fromPlatform();
     setState(() {
-      _appVersion = '${info.version} (${info.buildNumber})';
+      _appVersion = '${info.version}+${info.buildNumber}';
     });
   }
 
@@ -116,7 +116,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
     if (!mounted) return;
 
-    setState(() {}); // atualiza a exibição na seção Administração
+    setState(() {});
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(error ?? 'Configurações atualizadas com sucesso')),
@@ -245,7 +245,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     trailing: Chip(
                       label: Text(
                         AppConfig.environment,
-                        style: TextStyle(color: Colors.black),
+                        style: const TextStyle(color: Colors.black),
                       ),
                       backgroundColor: AppConfig.environment == 'DEV'
                           ? Colors.orange.shade200
@@ -309,7 +309,6 @@ class _SettingsPageState extends State<SettingsPage> {
                       onTap: _checkUpdate,
                     ),
                   ],
-
                   const Divider(height: 1),
 
                   AboutListTile(
@@ -404,7 +403,10 @@ class _SettingsPageState extends State<SettingsPage> {
               children: [
                 Text(
                   AppConfig.about['licenseName']!,
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 16),
                 Expanded(
@@ -491,7 +493,6 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Future<void> _checkUpdate() async {
-    // Mostra um loading enquanto consulta
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -501,10 +502,9 @@ class _SettingsPageState extends State<SettingsPage> {
     final update = await UpdateService.checkForUpdate();
 
     if (!mounted) return;
-    Navigator.pop(context); // fecha o loading
+    Navigator.pop(context);
 
     if (update == null) {
-      // Sem atualização disponível
       showDialog(
         context: context,
         builder: (_) => AlertDialog(
@@ -523,7 +523,6 @@ class _SettingsPageState extends State<SettingsPage> {
       return;
     }
 
-    // Tem atualização — mostra instruções
     final messenger = ScaffoldMessenger.of(context);
 
     await showDialog(
@@ -535,8 +534,8 @@ class _SettingsPageState extends State<SettingsPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('Versão disponível: ${update.version}'),
-              Text('Versão atual: $_appVersion'),
+              Text(' • Versão disponível: ${update.version}'),
+              Text(' • Versão atual: $_appVersion'),
               const SizedBox(height: 16),
               const Text(
                 'Como instalar:',
@@ -546,11 +545,13 @@ class _SettingsPageState extends State<SettingsPage> {
               const Text(
                 '1. Toque em "Baixar APK" abaixo.\n'
                 '2. Aguarde o download no navegador.\n'
-                '3. Abra o arquivo baixado.\n'
+                '3. Abra o arquivo baixado na pasta "Downloads".\n'
                 '4. Toque em "Instalar".\n'
-                '5. Se solicitado, toque em "Verificar app" → \n'
-                'Instalar apps desconhecidos e permita para o seu navegador.\n'
-                '6. Conclua a instalação normalmente.',
+                '5. Se solicitado, toque em:\n'
+                '    • "Verificar app" ou,\n'
+                '    • Instalar apps desconhecidos.\n'
+                '6. Conclua a instalação normalmente.\n\n'
+                'Em caso de dúvidas, contacte o suporte técnico.',
               ),
             ],
           ),

@@ -19,7 +19,7 @@ class UpdateInfo {
 }
 
 class UpdateService {
-  static String get _endpoint => '${AppConfig.apiBaseUrl}/api/update';
+  static String get _endpoint => '${AppConfig.apiBaseUrl}/update';
 
   static bool get _isSupportedPlatform {
     if (kIsWeb) return false;
@@ -34,20 +34,16 @@ class UpdateService {
 
   static int parseVersion(String version) {
     final parts = version.split('+');
-    final date = int.parse(parts[0].replaceAll('.', '')); // 20260306
-    final build = parts.length > 1 ? int.parse(parts[1]) : 0; // 4
+    final date = int.parse(parts[0].replaceAll('.', ''));
+    final build = parts.length > 1 ? int.parse(parts[1]) : 0;
     return date * 1000 + build;
   }
 
   static Future<UpdateInfo?> checkForUpdate() async {
-    if (!_isSupportedPlatform) {
-      debugPrint('UpdateService: plataforma não suportada');
-      return null;
-    }
+    if (!_isSupportedPlatform) return null;
 
     try {
       final currentVersion = await getCurrentVersion();
-      debugPrint('UpdateService: versão atual = $currentVersion');
 
       final response = await Dio().get(
         _endpoint,
@@ -58,19 +54,16 @@ class UpdateService {
         ),
       );
 
-      debugPrint('UpdateService: status = ${response.statusCode}');
-      debugPrint('UpdateService: data = ${response.data}');
-
       if (response.statusCode != 200) return null;
 
       final data = response.data;
-      final latestVersion = data['version'];
-      final apkUrl = data['apk'];
+      final latestVersion = data['version'] as String;
+      final apkUrl = data['apk'] as String;
+      final force = (data['force'] as bool?) ?? false;
 
-      debugPrint('UpdateService: latestVersion = $latestVersion');
-      debugPrint('UpdateService: parseLatest = ${parseVersion(latestVersion)}');
-      debugPrint('UpdateService: parseCurrent = ${parseVersion(currentVersion)}');
-
+      if (parseVersion(latestVersion) > parseVersion(currentVersion)) {
+        return UpdateInfo(version: latestVersion, apkUrl: apkUrl, force: force);
+      }
     } catch (e) {
       debugPrint('UpdateService error: $e');
     }
