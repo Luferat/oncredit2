@@ -36,6 +36,11 @@ class ApiCheckObserver extends NavigatorObserver {
 
   void _maybeCheck(Route route) {
     final name = route.settings.name ?? '';
+
+    // Dialogs abertos com showDialog() não têm nome — ignorar para não
+    // interferir com o fluxo de startup e outros dialogs internos.
+    if (name.isEmpty) return;
+
     if (_ignoredRoutes.contains(name)) return;
     if (_checking) return;
 
