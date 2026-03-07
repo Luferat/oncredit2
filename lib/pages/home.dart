@@ -1,5 +1,9 @@
+// lib/pages/home_page.dart
+
 import 'package:flutter/material.dart';
 import '../services/startup_service.dart';
+import '../services/biometric_service.dart';
+import '../templates/apptitle.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -9,22 +13,40 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  bool _biometricEnabled = false;
 
   @override
   void initState() {
     super.initState();
-
+    _loadBiometric();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       StartupService.run(context);
     });
   }
 
+  Future<void> _loadBiometric() async {
+    final enabled = await BiometricService.isEnabled();
+    if (mounted) setState(() => _biometricEnabled = enabled);
+  }
+
   @override
   Widget build(BuildContext context) {
-
-    return const Scaffold(
-      body: Center(
-        child: CircularProgressIndicator(),
+    return Scaffold(
+      backgroundColor: Colors.deepPurple,
+      body: SafeArea(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            const SizedBox(height: 48),
+            const AppTitle(),
+            if (_biometricEnabled) ...[
+              const SizedBox(height: 20),
+              const Icon(Icons.fingerprint, color: Colors.white70, size: 48),
+            ],
+            const SizedBox(height: 24),
+            const CircularProgressIndicator(color: Colors.white),
+          ],
+        ),
       ),
     );
   }

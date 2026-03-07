@@ -9,13 +9,10 @@ class AppTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     final currentRoute = ModalRoute.of(context)?.settings.name;
     final isHome = currentRoute == '/clients';
-
     return InkWell(
       borderRadius: BorderRadius.circular(8),
-
       splashColor: isHome ? Colors.transparent : Colors.white24,
       highlightColor: isHome ? Colors.transparent : Colors.white10,
-
       onTap: isHome
           ? null
           : () {
@@ -23,7 +20,6 @@ class AppTitle extends StatelessWidget {
                 context,
               ).pushNamedAndRemoveUntil('/clients', (route) => false);
             },
-
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: const [
