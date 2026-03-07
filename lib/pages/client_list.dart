@@ -21,6 +21,19 @@ class ClientListPage extends StatefulWidget {
 }
 
 class _ClientListPageState extends State<ClientListPage> {
+
+
+  void _goToStartup() {
+    if (!mounted) return;
+
+    Navigator.pushNamedAndRemoveUntil(
+      context,
+      '/',
+          (route) => false,
+    );
+  }
+
+
   final ClientService _clientService = ClientService();
   final TextEditingController _searchController = TextEditingController();
 
@@ -87,6 +100,21 @@ class _ClientListPageState extends State<ClientListPage> {
               builder: (context, snapshot) {
                 // Erro de rede ou API
                 if (snapshot.hasError) {
+
+                  final message = apiErrorMessage(snapshot.error!);
+
+                  // se for erro de rede/API, volta para o boot
+                  if (message.contains('conectar') ||
+                      message.contains('timeout') ||
+                      message.contains('servidor')) {
+
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      _goToStartup();
+                    });
+
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
                   return Center(
                     child: Padding(
                       padding: const EdgeInsets.all(32),

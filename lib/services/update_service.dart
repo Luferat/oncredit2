@@ -4,6 +4,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
+import '../config/app_config.dart';
+
 class UpdateInfo {
   final String version;
   final String apkUrl;
@@ -17,9 +19,7 @@ class UpdateInfo {
 }
 
 class UpdateService {
-  // URL independente da API principal — aponta para onde você hospedar o JSON de update
-  static const String _endpoint =
-      'https://luferat.github.io/oncredit/latest_update.json';
+  static String get _endpoint => '${AppConfig.apiBaseUrl}/api/update';
 
   static bool get _isSupportedPlatform {
     if (kIsWeb) return false;
@@ -34,38 +34,46 @@ class UpdateService {
 
   static int parseVersion(String version) {
     final parts = version.split('+');
-    final date = parts[0].replaceAll('.', '');
-    final build = parts.length > 1 ? parts[1] : '0';
-    return int.parse('$date$build');
+    final date = int.parse(parts[0].replaceAll('.', '')); // 20260306
+    final build = parts.length > 1 ? int.parse(parts[1]) : 0; // 4
+    return date * 1000 + build;
   }
 
   static Future<UpdateInfo?> checkForUpdate() async {
-    if (!_isSupportedPlatform) return null;
+    if (!_isSupportedPlatform) {
+      debugPrint('UpdateService: plataforma não suportada');
+      return null;
+    }
 
     try {
+      final currentVersion = await getCurrentVersion();
+      debugPrint('UpdateService: versão atual = $currentVersion');
+
       final response = await Dio().get(
         _endpoint,
         options: Options(
+          headers: {'X-API-Key': AppConfig.token},
           sendTimeout: const Duration(seconds: 3),
           receiveTimeout: const Duration(seconds: 3),
         ),
       );
 
+      debugPrint('UpdateService: status = ${response.statusCode}');
+      debugPrint('UpdateService: data = ${response.data}');
+
       if (response.statusCode != 200) return null;
 
       final data = response.data;
       final latestVersion = data['version'];
-      final apkUrl = data['link'];
-      final force = data['force'] ?? false;
+      final apkUrl = data['apk'];
 
-      if (latestVersion == null || apkUrl == null) return null;
+      debugPrint('UpdateService: latestVersion = $latestVersion');
+      debugPrint('UpdateService: parseLatest = ${parseVersion(latestVersion)}');
+      debugPrint('UpdateService: parseCurrent = ${parseVersion(currentVersion)}');
 
-      final currentVersion = await getCurrentVersion();
-
-      if (parseVersion(latestVersion) > parseVersion(currentVersion)) {
-        return UpdateInfo(version: latestVersion, apkUrl: apkUrl, force: force);
-      }
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('UpdateService error: $e');
+    }
 
     return null;
   }
