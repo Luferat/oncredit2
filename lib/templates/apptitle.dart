@@ -3,12 +3,19 @@
 import 'package:flutter/material.dart';
 
 class AppTitle extends StatelessWidget {
-  const AppTitle({super.key});
+  final bool large;
+
+  const AppTitle({super.key, this.large = false});
 
   @override
   Widget build(BuildContext context) {
     final currentRoute = ModalRoute.of(context)?.settings.name;
     final isHome = currentRoute == '/clients';
+
+    final double onSize = large ? 42 : 25;
+    final double iconSize = large ? 52 : 30;
+    final double creditSize = large ? 36 : 20;
+
     return InkWell(
       borderRadius: BorderRadius.circular(8),
       splashColor: isHome ? Colors.transparent : Colors.white24,
@@ -16,25 +23,28 @@ class AppTitle extends StatelessWidget {
       onTap: isHome
           ? null
           : () {
-              Navigator.of(
-                context,
-              ).pushNamedAndRemoveUntil('/clients', (route) => false);
-            },
+        Navigator.of(
+          context,
+        ).pushNamedAndRemoveUntil('/clients', (route) => false);
+      },
       child: Row(
         mainAxisSize: MainAxisSize.min,
-        children: const [
+        children: [
           Text(
             'ON',
             style: TextStyle(
               fontWeight: FontWeight.bold,
               color: Colors.orange,
-              fontSize: 25,
+              fontSize: onSize,
             ),
           ),
-          SizedBox(width: 2),
-          Icon(Icons.credit_score, color: Colors.white, size: 30),
-          SizedBox(width: 2),
-          Text('Credit', style: TextStyle(color: Colors.white, fontSize: 20)),
+          const SizedBox(width: 2),
+          Icon(Icons.credit_score, color: Colors.white, size: iconSize),
+          const SizedBox(width: 2),
+          Text(
+            'Credit',
+            style: TextStyle(color: Colors.white, fontSize: creditSize),
+          ),
         ],
       ),
     );

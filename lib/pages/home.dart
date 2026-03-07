@@ -34,18 +34,21 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       backgroundColor: Colors.deepPurple,
       body: SafeArea(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            const SizedBox(height: 48),
-            const AppTitle(),
-            if (_biometricEnabled) ...[
-              const SizedBox(height: 20),
-              const Icon(Icons.fingerprint, color: Colors.white70, size: 48),
+        child: Align(
+          alignment: Alignment.topCenter,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 40),
+              const AppTitle(large: true),
+              if (_biometricEnabled) ...[
+                const SizedBox(height: 24),
+                const Icon(Icons.fingerprint, color: Colors.white70, size: 56),
+              ],
+              const SizedBox(height: 32),
+              const CircularProgressIndicator(color: Colors.white),
             ],
-            const SizedBox(height: 24),
-            const CircularProgressIndicator(color: Colors.white),
-          ],
+          ),
         ),
       ),
     );
