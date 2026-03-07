@@ -1,19 +1,15 @@
 // lib/services/device_service.dart
 
+import 'package:flutter/foundation.dart';
+
 import '../config/app_config.dart';
-import 'package:uuid/uuid.dart';
 
 class DeviceService {
-  static const _uuid = Uuid();
-
+  /// Retorna o Android ID no Android; string vazia na Web.
+  /// Não gera UUID aleatório — o usuário decide o ID se necessário.
   static Future<String> getInitialId() async {
-    final androidId = await AppConfig.getDeviceId();
-
-    if (androidId.isNotEmpty) {
-      return androidId;
-    }
-
-    return _uuid.v4();
+    if (kIsWeb) return '';
+    return await AppConfig.getDeviceId();
   }
 
   static Future<String?> register({
@@ -24,7 +20,7 @@ class DeviceService {
 
     final online = await AppConfig.ping(customUrl: cleanedUrl);
     if (!online) {
-      return 'Servidor indisponível.';
+      return 'Servidor indisponível. Verifique a URL e tente novamente.';
     }
 
     return await AppConfig.register(deviceId, customUrl: cleanedUrl);

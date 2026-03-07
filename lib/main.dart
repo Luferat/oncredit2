@@ -6,6 +6,7 @@ import 'package:oncredit/pages/home.dart';
 import 'package:oncredit/pages/settings.dart';
 import 'package:oncredit/theme/theme_controller.dart';
 import 'package:oncredit/theme/theme_extensions.dart';
+import 'services/api_check_observer.dart';
 
 import 'config/app_config.dart';
 
@@ -29,6 +30,7 @@ class MyApp extends StatelessWidget {
     return AnimatedBuilder(
       animation: themeController,
       builder: (_, _) => MaterialApp(
+        navigatorObservers: [ApiCheckObserver()],
         debugShowCheckedModeBanner: false,
         themeMode: themeController.themeMode,
         theme: ThemeData(
