@@ -25,6 +25,7 @@ class Client {
   final double? totalPurchases;
   final double? totalPayments;
   final double? balance;
+  final DateTime? createdAt;
 
   Client({
     required this.id,
@@ -34,6 +35,7 @@ class Client {
     this.totalPurchases,
     this.totalPayments,
     this.balance,
+    this.createdAt,
   });
 
   List<String> get phones => contacts
@@ -56,12 +58,15 @@ class Client {
       cpf: json['cpf'] as String,
       contacts: json['contacts'] != null
           ? (json['contacts'] as List)
-                .map((c) => ClientContact.fromJson(c))
-                .toList()
+          .map((c) => ClientContact.fromJson(c))
+          .toList()
           : [],
       totalPurchases: (json['total_purchases'] as num?)?.toDouble(),
       totalPayments: (json['total_payments'] as num?)?.toDouble(),
       balance: (json['balance'] as num?)?.toDouble(),
+      createdAt: json['created_at'] != null
+          ? DateTime.tryParse(json['created_at'] as String)
+          : null,
     );
   }
 }

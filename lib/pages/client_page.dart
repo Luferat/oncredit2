@@ -100,7 +100,13 @@ class _ClientPageState extends State<ClientPage> {
                   ),
                 ),
                 const SizedBox(height: 4),
-                Text('CPF: ${client.formattedCpf}'),
+                Text(
+                  [
+                    'CPF: ${client.formattedCpf}',
+                    if (client.createdAt != null)
+                      'Desde: ${Formatters.formatDate(client.createdAt!)}',
+                  ].join('\n'),
+                ),
                 const SizedBox(height: 16),
                 const Divider(),
 
@@ -325,7 +331,7 @@ class _ClientPageState extends State<ClientPage> {
                 ),
                 const SizedBox(height: 12),
                 ...client.phones.map(
-                  (phone) => ListTile(
+                      (phone) => ListTile(
                     leading: const Icon(Icons.phone_android),
                     title: Text(Formatters.formatPhone(phone)),
                     subtitle: const Text('Toque no menu para ações'),

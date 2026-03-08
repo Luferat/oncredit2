@@ -79,7 +79,13 @@ class _ClientHistoryPageState extends State<ClientHistoryPage> {
                 ),
               ),
               const SizedBox(height: 4),
-              Text('CPF: ${widget.client.formattedCpf}'),
+              Text(
+                [
+                  'CPF: ${widget.client.formattedCpf}',
+                  if (widget.client.createdAt != null)
+                    'Desde: ${Formatters.formatDate(widget.client.createdAt!)}',
+                ].join('\n'),
+              ),
               const SizedBox(height: 16),
               const Divider(),
               Expanded(
