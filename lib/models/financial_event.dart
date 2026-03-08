@@ -8,7 +8,7 @@ class FinancialEvent {
   final double value;
   final DateTime date;
   final FinancialEventType type;
-  final String? method; // só em pagamentos
+  final String? method;
 
   FinancialEvent({
     required this.id,
@@ -19,7 +19,6 @@ class FinancialEvent {
     this.method,
   });
 
-  // Usado no GET /clients/<id>/history
   factory FinancialEvent.fromJson(Map<String, dynamic> json) {
     return FinancialEvent(
       id: json['id'] as int,

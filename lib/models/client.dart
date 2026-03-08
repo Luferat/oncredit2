@@ -1,7 +1,7 @@
 // lib/models/client.dart
 
 class ClientContact {
-  final String type; // Fixo, Celular, E-mail
+  final String type;
   final String value;
 
   ClientContact({required this.type, required this.value});
@@ -21,7 +21,6 @@ class Client {
   final String name;
   final String cpf;
 
-  // Preenchidos apenas no GET /clients/<id>
   final List<ClientContact> contacts;
   final double? totalPurchases;
   final double? totalPayments;
@@ -37,7 +36,6 @@ class Client {
     this.balance,
   });
 
-  // Telefones (Fixo + Celular) para exibição/ações
   List<String> get phones => contacts
       .where((c) => c.type == 'Celular' || c.type == 'Fixo')
       .map((c) => c.value)
@@ -51,7 +49,6 @@ class Client {
         '${cpf.substring(9, 11)}';
   }
 
-  // Usado no GET /clients (lista)
   factory Client.fromJson(Map<String, dynamic> json) {
     return Client(
       id: json['id'] as int,

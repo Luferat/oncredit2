@@ -11,8 +11,9 @@ import '../widgets/edit_event_sheet.dart';
 
 class ClientHistoryPage extends StatefulWidget {
   final Client client;
+  final VoidCallback? onChanged;
 
-  const ClientHistoryPage({super.key, required this.client});
+  const ClientHistoryPage({super.key, required this.client, this.onChanged});
 
   @override
   State<ClientHistoryPage> createState() => _ClientHistoryPageState();
@@ -47,7 +48,10 @@ class _ClientHistoryPageState extends State<ClientHistoryPage> {
       backgroundColor: Colors.transparent,
       builder: (_) => EditEventSheet(event: item, clientId: widget.client.id),
     );
-    if (changed == true) _reload();
+    if (changed == true) {
+      _reload();
+      widget.onChanged?.call();
+    }
   }
 
   @override
@@ -78,7 +82,6 @@ class _ClientHistoryPageState extends State<ClientHistoryPage> {
               Text('CPF: ${widget.client.formattedCpf}'),
               const SizedBox(height: 16),
               const Divider(),
-
               Expanded(
                 child: FutureBuilder<(List<FinancialEvent>, Client)>(
                   future: _dataFuture,
@@ -199,4 +202,4 @@ class _ClientHistoryPageState extends State<ClientHistoryPage> {
       ),
     );
   }
-}
+} // fim de _ClientHistoryPageState

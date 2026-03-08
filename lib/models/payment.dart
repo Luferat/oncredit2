@@ -13,7 +13,6 @@ class Payment {
     required this.date,
   });
 
-  // Usado no GET /clients/<id>/payments/<pay_id>
   factory Payment.fromJson(Map<String, dynamic> json) {
     return Payment(
       id: json['id'] as int,
@@ -23,7 +22,6 @@ class Payment {
     );
   }
 
-  // Usado no POST e PUT
   Map<String, dynamic> toJson() {
     return {
       'value': value,

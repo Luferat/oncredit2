@@ -240,22 +240,6 @@ class _SettingsPageState extends State<SettingsPage> {
                   const Divider(height: 1),
 
                   ListTile(
-                    leading: const Icon(Icons.cloud),
-                    title: const Text('Ambiente'),
-                    trailing: Chip(
-                      label: Text(
-                        AppConfig.environment,
-                        style: const TextStyle(color: Colors.black),
-                      ),
-                      backgroundColor: AppConfig.environment == 'DEV'
-                          ? Colors.orange.shade200
-                          : Colors.green.shade200,
-                    ),
-                  ),
-
-                  const Divider(height: 1),
-
-                  ListTile(
                     leading: const Icon(Icons.phone_android),
                     title: const Text('Plataforma'),
                     subtitle: Text(

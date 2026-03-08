@@ -60,7 +60,6 @@ class _ClientEditPageState extends State<ClientEditPage> {
         .map((p) => p.replaceAll(RegExp(r'[^0-9]'), ''))
         .toList();
 
-    // Monta contacts com tipo Celular para todos os telefones
     final contacts = phones
         .map((p) => {'type': 'Celular', 'value': p})
         .toList();
@@ -121,7 +120,6 @@ class _ClientEditPageState extends State<ClientEditPage> {
     final ok = await _confirmDelete();
     if (!ok || !mounted) return;
 
-    // A API faz soft delete — não precisa apagar histórico separadamente
     await ClientService().deleteClient(widget.client.id);
 
     if (!mounted) return;

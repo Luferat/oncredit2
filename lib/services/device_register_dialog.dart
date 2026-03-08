@@ -1,3 +1,5 @@
+// lib/services/device_register_dialog.dart
+
 import 'package:flutter/material.dart';
 import '../config/app_config.dart';
 import '../services/device_service.dart';
@@ -10,7 +12,6 @@ class DeviceRegisterDialog extends StatefulWidget {
 }
 
 class _DeviceRegisterDialogState extends State<DeviceRegisterDialog> {
-
   final uidController = TextEditingController();
   final urlController = TextEditingController(text: AppConfig.apiBaseUrl);
 
@@ -27,14 +28,12 @@ class _DeviceRegisterDialogState extends State<DeviceRegisterDialog> {
 
   @override
   Widget build(BuildContext context) {
-
     return AlertDialog(
       title: const Text('Bem-vindo ao ONCredit'),
 
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-
           TextField(
             controller: uidController,
             decoration: InputDecoration(
@@ -56,22 +55,17 @@ class _DeviceRegisterDialogState extends State<DeviceRegisterDialog> {
       ),
 
       actions: [
-
         TextButton(
           onPressed: () => Navigator.pop(context, false),
           child: const Text('Cancelar'),
         ),
 
-        ElevatedButton(
-          onPressed: _confirm,
-          child: const Text('Confirmar'),
-        ),
+        ElevatedButton(onPressed: _confirm, child: const Text('Confirmar')),
       ],
     );
   }
 
   Future<void> _confirm() async {
-
     final uid = uidController.text.trim();
     final url = urlController.text.trim();
 
@@ -85,10 +79,7 @@ class _DeviceRegisterDialogState extends State<DeviceRegisterDialog> {
       return;
     }
 
-    final error = await DeviceService.register(
-      deviceId: uid,
-      apiUrl: url,
-    );
+    final error = await DeviceService.register(deviceId: uid, apiUrl: url);
 
     if (error != null) {
       setState(() => uidError = error);

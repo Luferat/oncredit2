@@ -23,12 +23,10 @@ class _EditEventSheetState extends State<EditEventSheet> {
   final _formKey = GlobalKey<FormState>();
   bool _saving = false;
 
-  // Campos de compra
   late TextEditingController _descriptionController;
   late TextEditingController _quantityController;
   late TextEditingController _unitValueController;
 
-  // Campos de pagamento
   late TextEditingController _valueController;
   late String _method;
 
@@ -42,7 +40,6 @@ class _EditEventSheetState extends State<EditEventSheet> {
     _date = widget.event.date;
 
     if (_isPurchase) {
-      // Desmonta "2 x Calça jeans" → quantity=2, description="Calça jeans"
       final match = RegExp(
         r'^(\d+) x (.+)$',
       ).firstMatch(widget.event.description);
@@ -158,7 +155,6 @@ class _EditEventSheetState extends State<EditEventSheet> {
     final color = _isPurchase ? Colors.red : Colors.green;
 
     return Padding(
-      // Sobe o sheet quando o teclado aparece
       padding: EdgeInsets.only(
         bottom: MediaQuery.of(context).viewInsets.bottom,
       ),
@@ -173,7 +169,6 @@ class _EditEventSheetState extends State<EditEventSheet> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Alça
               Container(
                 width: 40,
                 height: 4,
@@ -212,7 +207,6 @@ class _EditEventSheetState extends State<EditEventSheet> {
               if (_isPurchase) ..._buildPurchaseFields(),
               if (!_isPurchase) ..._buildPaymentFields(),
 
-              // Data (comum aos dois)
               ListTile(
                 contentPadding: EdgeInsets.zero,
                 leading: const Icon(Icons.calendar_today),

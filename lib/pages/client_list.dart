@@ -21,18 +21,11 @@ class ClientListPage extends StatefulWidget {
 }
 
 class _ClientListPageState extends State<ClientListPage> {
-
-
   void _goToStartup() {
     if (!mounted) return;
 
-    Navigator.pushNamedAndRemoveUntil(
-      context,
-      '/',
-          (route) => false,
-    );
+    Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
   }
-
 
   final ClientService _clientService = ClientService();
   final TextEditingController _searchController = TextEditingController();
@@ -98,16 +91,11 @@ class _ClientListPageState extends State<ClientListPage> {
             child: FutureBuilder<ClientListResponse>(
               future: _listFuture,
               builder: (context, snapshot) {
-                // Erro de rede ou API
                 if (snapshot.hasError) {
-
                   final message = apiErrorMessage(snapshot.error!);
-
-                  // se for erro de rede/API, volta para o boot
                   if (message.contains('conectar') ||
                       message.contains('timeout') ||
                       message.contains('servidor')) {
-
                     WidgetsBinding.instance.addPostFrameCallback((_) {
                       _goToStartup();
                     });
@@ -161,7 +149,6 @@ class _ClientListPageState extends State<ClientListPage> {
 
                 return Column(
                   children: [
-                    // Card de saldo
                     Card(
                       margin: const EdgeInsets.all(16),
                       color: context.colors.primaryContainer,
@@ -191,7 +178,6 @@ class _ClientListPageState extends State<ClientListPage> {
                     _buildSearchField(),
                     const SizedBox(height: 8),
 
-                    // Lista ou estado vazio
                     Expanded(
                       child: clients.isEmpty
                           ? _buildEmptyState(context, allClients.isEmpty)
@@ -241,7 +227,6 @@ class _ClientListPageState extends State<ClientListPage> {
             ),
           ),
 
-          // Botão Novo cliente
           SafeArea(
             top: false,
             child: Padding(
@@ -269,7 +254,6 @@ class _ClientListPageState extends State<ClientListPage> {
     );
   }
 
-  // Estado vazio — diferencia lista vazia de filtro sem resultado
   Widget _buildEmptyState(BuildContext context, bool noClientsAtAll) {
     return Center(
       child: Padding(

@@ -5,26 +5,19 @@ import 'package:intl/intl.dart';
 
 class Formatters {
   static final dateFormat = DateFormat('dd/MM/yyyy');
-  static final dateTimeFormat = DateFormat(
-    'dd/MM/yyyy HH:mm',
-  );
-
+  static final dateTimeFormat = DateFormat('dd/MM/yyyy HH:mm');
   static final currencyFormat = NumberFormat.currency(
     locale: 'pt_BR',
     symbol: 'R\$',
   );
 
-  // Parseia datas ISO 8601 da API ("2026-03-05T13:49:02")
   static DateTime parseDate(String value) {
     return DateTime.parse(value);
   }
 
-  // Formata DateTime para exibição (sem hora) — uso geral no histórico
   static String formatDate(DateTime date) => dateFormat.format(date);
 
-  // Formata DateTime com hora — reservado para quando necessário
   static String formatDateTime(DateTime date) => dateTimeFormat.format(date);
-
   static final currencyInput = TextInputFormatter.withFunction((
     oldValue,
     newValue,

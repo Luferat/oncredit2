@@ -135,7 +135,6 @@ class _ClientPageState extends State<ClientPage> {
                 const SizedBox(height: 16),
                 const Divider(),
 
-                // Resumo financeiro — dados já vêm no GET /clients/<id>
                 Card(
                   margin: const EdgeInsets.only(top: 12),
                   child: Padding(
@@ -175,12 +174,18 @@ class _ClientPageState extends State<ClientPage> {
                       foregroundColor: context.colors.primary,
                       padding: const EdgeInsets.symmetric(vertical: 16),
                     ),
-                    onPressed: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => ClientHistoryPage(client: client),
-                      ),
-                    ),
+                    onPressed: () async {
+                      final changed = await Navigator.push<bool>(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => ClientHistoryPage(
+                            client: client,
+                            onChanged: _reload,
+                          ),
+                        ),
+                      );
+                      if (changed == true) _reload();
+                    },
                   ),
                 ),
               ],

@@ -6,7 +6,7 @@ import '../services/client_service.dart';
 import '../tools/formatters.dart';
 
 class NewPurchasePage extends StatefulWidget {
-  final int clientId; // ← era String
+  final int clientId;
 
   const NewPurchasePage({super.key, required this.clientId});
 

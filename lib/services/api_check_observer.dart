@@ -1,14 +1,4 @@
 // lib/services/api_check_observer.dart
-//
-// Uso: registre em MaterialApp:
-//
-//   MaterialApp(
-//     navigatorObservers: [ApiCheckObserver()],
-//     ...
-//   )
-//
-// Intercepta toda navegação e verifica se a API está online.
-// Se offline, exibe dialog com opções — sem bloquear o app indefinidamente.
 
 import 'dart:io';
 import 'package:flutter/foundation.dart';
@@ -18,10 +8,7 @@ import 'package:flutter/services.dart';
 import '../config/app_config.dart';
 
 class ApiCheckObserver extends NavigatorObserver {
-  // Rotas que gerenciam a própria conectividade (não checar duas vezes)
   static const _ignoredRoutes = {'/', '/home'};
-
-  // Evita checagens simultâneas (ex: animação de transição dispara 2x)
   bool _checking = false;
 
   @override
@@ -36,15 +23,9 @@ class ApiCheckObserver extends NavigatorObserver {
 
   void _maybeCheck(Route route) {
     final name = route.settings.name ?? '';
-
-    // Dialogs abertos com showDialog() não têm nome — ignorar para não
-    // interferir com o fluxo de startup e outros dialogs internos.
     if (name.isEmpty) return;
-
     if (_ignoredRoutes.contains(name)) return;
     if (_checking) return;
-
-    // Executa após o frame para garantir que o context da rota está montado
     WidgetsBinding.instance.addPostFrameCallback((_) => _check());
   }
 
@@ -71,8 +52,7 @@ class ApiCheckObserver extends NavigatorObserver {
       builder: (ctx) => AlertDialog(
         title: const Text('Servidor indisponível'),
         content: const Text(
-          'A conexão com a API foi perdida.\n'
-              'Verifique sua rede e tente novamente.',
+          'A conexão com a API foi perdida.\nVerifique sua rede e tente novamente.',
         ),
         actions: [
           TextButton(
@@ -96,9 +76,6 @@ class ApiCheckObserver extends NavigatorObserver {
       return;
     }
 
-    // 'retry': testa de novo — se ainda offline, mostra o dialog novamente
-    if (action == 'retry' && context.mounted) {
-      await _check();
-    }
+    if (action == 'retry' && context.mounted) await _check();
   }
 }

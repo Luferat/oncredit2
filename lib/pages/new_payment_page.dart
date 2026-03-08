@@ -7,7 +7,7 @@ import '../theme/theme_extensions.dart';
 import '../tools/formatters.dart';
 
 class NewPaymentPage extends StatefulWidget {
-  final int clientId; // ← era String
+  final int clientId;
 
   const NewPaymentPage({super.key, required this.clientId});
 

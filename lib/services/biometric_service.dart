@@ -8,7 +8,6 @@ class BiometricService {
   static const _prefKey = 'biometric_enabled';
   static final _auth = LocalAuthentication();
 
-  // Só disponível no Android (não na Web)
   static bool get isSupported =>
       !kIsWeb && defaultTargetPlatform == TargetPlatform.android;
 
@@ -23,7 +22,6 @@ class BiometricService {
     await prefs.setBool(_prefKey, value);
   }
 
-  // Verifica se o dispositivo tem biometria disponível
   static Future<bool> isAvailable() async {
     if (!isSupported) return false;
     final canCheck = await _auth.canCheckBiometrics;
@@ -31,14 +29,13 @@ class BiometricService {
     return canCheck && isDeviceSupported;
   }
 
-  // Realiza a autenticação
   static Future<bool> authenticate() async {
     if (!isSupported) return true;
     try {
       return await _auth.authenticate(
         localizedReason: 'Confirme sua identidade para acessar o ONCredit',
         options: const AuthenticationOptions(
-          biometricOnly: false, // permite PIN como fallback
+          biometricOnly: false,
           stickyAuth: true,
         ),
       );

@@ -6,20 +6,12 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
 
 class AppConfig {
-  static const String environment = 'PROD';
-
-  // Valor padrão — usado quando nenhum foi salvo ainda
-  static const String defaultApiBaseUrl = 'http://localhost:5000/api';
-
-  // Valor ativo em memória (pode ser sobrescrito pelo salvo no dispositivo)
+  static const String defaultApiBaseUrl = 'http://0.0.0.0:5000/api';
   static String apiBaseUrl = defaultApiBaseUrl;
-
   static String androidId = '';
   static String token = '';
-
   static bool showRepositoryLink = false;
   static bool showResetLink = false;
-
   static Map<String, String> about = {
     'app': '© 2026 André Luferat / ONCredit',
     'appName': 'ONCredit',

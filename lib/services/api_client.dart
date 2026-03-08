@@ -22,7 +22,6 @@ class ApiClient {
               }
               handler.next(options);
             },
-
             onError: (DioException error, handler) {
               final status = error.response?.statusCode;
               final message = _friendlyMessage(status, error);
@@ -38,10 +37,8 @@ class ApiClient {
           ),
         );
 
-  // static Dio get instance => _dio;
-
   static Dio get instance {
-    _dio.options.baseUrl = AppConfig.apiBaseUrl; // ← atualiza antes de cada uso
+    _dio.options.baseUrl = AppConfig.apiBaseUrl;
     return _dio;
   }
 
@@ -72,7 +69,6 @@ class ApiClient {
   }
 }
 
-// Exceção tipada para capturar nos widgets
 class ApiException implements Exception {
   final String message;
   final int? statusCode;

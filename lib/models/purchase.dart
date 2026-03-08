@@ -15,7 +15,6 @@ class Purchase {
     required this.date,
   });
 
-  // Usado no GET /clients/<id>/purchases/<pur_id>
   factory Purchase.fromJson(Map<String, dynamic> json) {
     return Purchase(
       id: json['id'] as int,
@@ -26,13 +25,12 @@ class Purchase {
     );
   }
 
-  // Usado no POST e PUT
   Map<String, dynamic> toJson() {
     return {
       'description': description,
       'quantity': quantity,
       'unit_value': unitValue,
-      'date': date.toIso8601String().substring(0, 19), // YYYY-MM-DDTHH:MM:SS
+      'date': date.toIso8601String().substring(0, 19),
     };
   }
 }

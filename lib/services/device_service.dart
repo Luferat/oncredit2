@@ -5,8 +5,6 @@ import 'package:flutter/foundation.dart';
 import '../config/app_config.dart';
 
 class DeviceService {
-  /// Retorna o Android ID no Android; string vazia na Web.
-  /// Não gera UUID aleatório — o usuário decide o ID se necessário.
   static Future<String> getInitialId() async {
     if (kIsWeb) return '';
     return await AppConfig.getDeviceId();

@@ -7,7 +7,6 @@ import 'package:oncredit/pages/settings.dart';
 import 'package:oncredit/theme/theme_controller.dart';
 import 'package:oncredit/theme/theme_extensions.dart';
 import 'services/api_check_observer.dart';
-
 import 'config/app_config.dart';
 
 late ThemeController themeController;
@@ -31,7 +30,7 @@ class MyApp extends StatelessWidget {
       animation: themeController,
       builder: (_, _) => MaterialApp(
         navigatorObservers: [ApiCheckObserver()],
-        debugShowCheckedModeBanner: false,
+        // debugShowCheckedModeBanner: false,
         themeMode: themeController.themeMode,
         theme: ThemeData(
           brightness: Brightness.light,
